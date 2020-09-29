@@ -2,6 +2,9 @@
 
 package lesson2
 
+import java.lang.StringBuilder
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -94,8 +97,36 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+
+//Трудоёмкость: O(N * M)
+//Ресурсоемкость: S(N * M)
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    if (first.isEmpty() || second.isEmpty()) {
+        return ""
+    }
+
+    val matrix = Array(first.length) { Array(second.length) { 0 } }
+
+    var maxLength = 0
+    var maxIndexOfFirst = 0
+
+    matrix.forEachIndexed { indexFirst, array ->
+        array.forEachIndexed { indexSecond, _ ->
+            if (first[indexFirst] == second[indexSecond]) {
+                if (indexFirst != 0 && indexSecond != 0) {
+                    matrix[indexFirst][indexSecond] = matrix[indexFirst - 1][indexSecond - 1] + 1
+                } else {
+                    matrix[indexFirst][indexSecond] = 1
+                }
+                if (matrix[indexFirst][indexSecond] > maxLength) {
+                    maxLength = matrix[indexFirst][indexSecond]
+                    maxIndexOfFirst = indexFirst
+                }
+            }
+        }
+    }
+
+    return first.substring(maxIndexOfFirst - maxLength + 1, maxIndexOfFirst + 1)
 }
 
 /**
@@ -108,6 +139,40 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+//Трудоёмкость: O(N)
+//Ресурсоемкость: S(N)
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    println("starting with limit $limit")
+    if (limit <= 1) return 0
+    val list = MutableList(limit + 1) { 0 }
+    val sqrtLimit = sqrt(limit.toDouble()).toInt()
+    var x2 = 0
+
+    for (i in 1..sqrtLimit) {
+        x2 += 2 * i - 1
+        var y2 = 0
+        for (j in 1..sqrtLimit) {
+            y2 += 2 * j - 1
+            var n = 4 * x2 + y2
+            if (n <= limit && (n % 12 == 1 || n % 12 == 5)) list[n]++
+            n -= x2
+            if (n <= limit && n % 12 == 7) list[n]++
+            n -= 2 * y2
+            if (i > j && n <= limit && n % 12 == 11) list[n]++
+        }
+    }
+
+    list[2] = 1
+    if (limit > 2) list[3] = 1
+    if (limit > 4) list[5] = 1
+    for (i in 5..sqrtLimit) {
+        if (list[i] % 2 == 1) {
+            val square = i * i
+            for (j in square..limit step square) {
+                list[j] = 0
+            }
+        }
+    }
+
+    return list.count { it % 2 == 1 }
 }

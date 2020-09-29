@@ -2,6 +2,10 @@
 
 package lesson1
 
+import java.io.File
+import java.lang.IllegalArgumentException
+import kotlin.math.min
+
 /**
  * Сортировка времён
  *
@@ -62,8 +66,35 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+// Трудоёмкость: O(N * logN)
+// Ресурсоемкость: S(N)
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val map = sortedMapOf<String, MutableList<String>>(compareBy<String> {
+        it.split(" ")[0]
+    }.thenBy { it.split(" ")[1].toInt() })
+
+    for (line in File(inputName).readLines()) {
+        if (!Regex("""[а-яА-ЯёЁ-]+\s[а-яА-ЯёЁ-]+\s-\s[а-яА-ЯёЁ-]+\s\d+""").containsMatchIn(line)) {
+            throw IllegalArgumentException()
+        }
+        val list = line.split(" - ")
+        val name = list[0]
+        val address = list[1]
+
+        val listOfNames = map.getOrDefault(address, mutableListOf())
+        listOfNames.add(name)
+        map[address] = listOfNames
+    }
+
+    map.map { it.value.sort() }
+
+    File(outputName).bufferedWriter().use {
+        map.forEach { (address, listOfNames) ->
+            it.write(address + " - " + listOfNames.joinToString(", "))
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -96,8 +127,38 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+
+// Трудоёмкость: O(N)
+// Ресурсоемкость: S(N)
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val minTemp = 2730
+    val maxTemp = 5000
+    val list = mutableListOf<Int>()
+
+    for (line in File(inputName).readLines()) {
+        val indexOfPoint = line.length - 2
+        val number = line.removeRange(indexOfPoint, indexOfPoint + 1)
+        list.add(number.toInt() + minTemp)
+    }
+
+
+    val sorted = Sorts.countingSort(list.toIntArray(), maxTemp + minTemp)
+
+    File(outputName).bufferedWriter().use {
+        for (number in sorted) {
+            val string = (number - minTemp).toString()
+            val length = string.length
+
+            val res = if (string.first() == '-' && length == 2) {
+                string.subSequence(0, length - 1).toString() + "0." + string.last()
+            } else if (length == 1) {
+                "0." + string.last()
+            } else string.subSequence(0, length - 1).toString() + "." + string.last()
+
+            it.write(res)
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -129,8 +190,40 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+
+// Трудоёмкость: O(N)
+// Ресурсоемкость: S(N)
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val mapForCount = mutableMapOf<Int, Int>()
+    val list = mutableListOf<Int>()
+    for (line in File(inputName).readLines()) {
+        val currentNumber = line.toInt()
+        val currentCount = mapForCount[currentNumber] ?: 1
+        mapForCount[currentNumber] = currentCount + 1
+        list.add(currentNumber)
+    }
+    var maxCount = 0
+    var numberWithMaxCount = 0
+    mapForCount.forEach {
+        val currentCount = it.value
+        if (maxCount == currentCount) numberWithMaxCount = min(it.key, numberWithMaxCount)
+        if (maxCount < currentCount) {
+            numberWithMaxCount = it.key
+            maxCount = currentCount
+        }
+    }
+
+    val res = list.filterNot { it == numberWithMaxCount }
+    File(outputName).bufferedWriter().use {
+        for (element in res) {
+            it.write(element.toString())
+            it.newLine()
+        }
+        for (i in 0 until maxCount - 1) {
+            it.write(numberWithMaxCount.toString())
+            it.newLine()
+        }
+    }
 }
 
 /**
