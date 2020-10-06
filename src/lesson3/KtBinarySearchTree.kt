@@ -82,11 +82,48 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      * Средняя
      */
 
-    //Трудоёмкость: O(N * lnN)
+    //Трудоёмкость: O(logN)
     //Ресурсоемкость: S(const)
     override fun remove(element: T): Boolean {
-        if (!contains(element)) return false
+        var contains = true
+        fun delete(node: Node<T>?, element: T): Node<T>? {
+            if (node == null) {
+                contains = false
+                return node
+            }
+
+            when {
+                element < node.value -> {
+                    node.left = delete(node.left, element)
+                    return node
+                }
+                element > node.value -> {
+                    node.right = delete(node.right, element)
+                    return node
+                }
+                else -> {
+                    if (node.left == null) {
+                        return node.right
+                    } else if (node.right == null) {
+                        return node.left
+                    }
+
+                    var min = node.right
+                    while (min!!.left != null) {
+                        min = min.left
+                    }
+
+                    val a = min.value
+                    val newNode = Node(a)
+                    newNode.left = node.left
+                    newNode.right = delete(node.right, a)
+                    return newNode
+                }
+            }
+        }
+
         root = delete(root, element)
+        if (!contains) return false
         size--
         return true
     }
@@ -195,7 +232,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Сложная
          */
-        //Трудоёмкость: O(N * logN)
+        //Трудоёмкость: O(logN)
         //Ресурсоемкость: S(const)
         override fun remove() {
             if (!this::lastElement.isInitialized || !remove(lastElement)) throw IllegalStateException()

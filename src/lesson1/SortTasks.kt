@@ -70,7 +70,7 @@ fun sortTimes(inputName: String, outputName: String) {
 // Трудоёмкость: O(N * logN)
 // Ресурсоемкость: S(N)
 fun sortAddresses(inputName: String, outputName: String) {
-    val map = sortedMapOf<String, MutableList<String>>(compareBy<String> {
+    val addressesWithNames = sortedMapOf<String, MutableList<String>>(compareBy<String> {
         it.split(" ")[0]
     }.thenBy { it.split(" ")[1].toInt() })
 
@@ -82,15 +82,15 @@ fun sortAddresses(inputName: String, outputName: String) {
         val name = list[0]
         val address = list[1]
 
-        val listOfNames = map.getOrDefault(address, mutableListOf())
+        val listOfNames = addressesWithNames.getOrDefault(address, mutableListOf())
         listOfNames.add(name)
-        map[address] = listOfNames
+        addressesWithNames[address] = listOfNames
     }
 
-    map.map { it.value.sort() }
+    addressesWithNames.map { it.value.sort() }
 
     File(outputName).bufferedWriter().use {
-        map.forEach { (address, listOfNames) ->
+        addressesWithNames.forEach { (address, listOfNames) ->
             it.write(address + " - " + listOfNames.joinToString(", "))
             it.newLine()
         }
