@@ -2,6 +2,8 @@
 
 package lesson6
 
+import java.lang.IllegalArgumentException
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -90,8 +92,49 @@ fun Graph.minimumSpanningTree(): Graph {
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
+
+// Трудоемкость: O(V)
+// Ресурсоемкость: S(V)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
-    TODO()
+    val res = mutableSetOf<Graph.Vertex>()
+    val allVisited = mutableSetOf<Graph.Vertex>()
+    val oddSet = mutableSetOf<Graph.Vertex>()
+    val evenSet = mutableSetOf<Graph.Vertex>()
+
+    fun findLargestSet(
+        current: Graph.Vertex,
+        previous: Graph.Vertex?,
+        isOdd: Boolean
+    ) {
+        if (isOdd) {
+            oddSet += current
+        } else {
+            evenSet += current
+        }
+
+        for (next in this.getNeighbors(current)) {
+            if (next == previous) continue
+            if (next in oddSet || next in evenSet) {
+                throw IllegalArgumentException()
+            }
+            findLargestSet(next, current, !isOdd)
+        }
+    }
+
+    for (vertex in this.vertices) {
+        if (vertex !in allVisited) {
+            findLargestSet(vertex, null, true)
+            allVisited += oddSet
+            allVisited += evenSet
+            res += if (oddSet.size >= evenSet.size) {
+                oddSet
+            } else evenSet
+            oddSet.clear()
+            evenSet.clear()
+        }
+    }
+
+    return res
 }
 
 /**
@@ -114,8 +157,29 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+
+//Ресурсоемкость: S(V + E)
+//Трудоемкость: O(V * (V + E))
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    var bestPath = Path()
+
+    fun findBestPath(currentVertex: Graph.Vertex, currentPath: Path) {
+        for (next in this.getNeighbors(currentPath.vertices.last())) {
+            if (next in currentPath) continue
+            val nextPath = Path(currentPath, this, next)
+            if (bestPath.length < nextPath.length) {
+                bestPath = nextPath
+            }
+            findBestPath(next, nextPath)
+        }
+    }
+
+    for (vertex in this.vertices) {
+        findBestPath(vertex, Path(vertex))
+        if (bestPath.vertices.size == this.vertices.size) break
+    }
+
+    return bestPath
 }
 
 /**
