@@ -165,10 +165,12 @@ fun calcPrimesNumber(limit: Int): Int {
     list[2] = 1
     if (limit > 2) list[3] = 1
     if (limit > 4) list[5] = 1
+
     for (i in 5..sqrtLimit) {
         if (list[i] % 2 == 1) {
             val square = i * i
             for (j in square..limit step square) {
+
                 list[j] = 0
             }
         }

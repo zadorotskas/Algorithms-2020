@@ -35,6 +35,46 @@ abstract class AbstractDynamicTests {
                 """.trimIndent()
             ).length, "Answer must have length of $expectedLength2"
         )
+
+        val rickAstleyFirst = """
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+
+We've known each other for so long
+Your heart's been aching, but
+You're too shy to say it
+Inside, we both know what's been going on
+We know the game and we're gonna play it
+        """.trimIndent()
+
+        val rickAstleySecond = """
+And if you ask me how I'm feeling
+Don't tell me you're too blind to see
+
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+        """.trimIndent()
+
+        val result = """
+            Never gonna give you up
+            Never gonna let you down
+            Never gonna run around and desert you
+            Never gonna make you cry
+            Never gonna say goodbye
+            Never gonna tell a lie and hurt you
+        """.trimIndent()
+
+        assertEquals(
+            result, lesson7.longestCommonSubSequence(rickAstleyFirst, rickAstleySecond)
+        )
     }
 
     fun longestIncreasingSubSequence(longestIncreasingSubSequence: (List<Int>) -> List<Int>) {
@@ -54,6 +94,10 @@ abstract class AbstractDynamicTests {
                     45, 76, 15, 99, 100, 88, 84, 35, 88
                 )
             )
+        )
+        assertEquals(
+            listOf(7, 77, 777, 7777, 77777),
+            longestIncreasingSubSequence(listOf(999, 7, 66666, 77, 66, 777, 6, 7777, 6666, 77777, 12345))
         )
     }
 

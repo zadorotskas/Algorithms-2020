@@ -93,8 +93,8 @@ fun Graph.minimumSpanningTree(): Graph {
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
 
-// Трудоемкость: O(V)
-// Ресурсоемкость: S(V)
+// Трудоемкость: O(V + E)
+// Ресурсоемкость: S(V + E)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
     val res = mutableSetOf<Graph.Vertex>()
     val allVisited = mutableSetOf<Graph.Vertex>()
@@ -159,7 +159,7 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  */
 
 //Ресурсоемкость: S(V + E)
-//Трудоемкость: O(V * (V + E))
+//Трудоемкость: O(V * V)
 fun Graph.longestSimplePath(): Path {
     var bestPath = Path()
 
